@@ -1,7 +1,6 @@
-
 import { Injectable } from '@angular/core';
 import { Product } from '../models/product';
-import { GoogleGenAI, Chat, GenerateContentStreamResult } from "@google/genai";
+import { GoogleGenAI, Chat } from "@google/genai";
 
 @Injectable({
   providedIn: 'root'
@@ -67,7 +66,8 @@ export class ChatService {
 
       if (!this.chatSession) throw new Error("Chat session failed to initialize");
 
-      const result = await this.chatSession.sendMessageStream({ message });
+      // FIXED: Use the correct return type from sendMessageStream
+      const result = this.chatSession.sendMessageStream({ message });
       
       return (async function*() {
          for await (const chunk of result) {
