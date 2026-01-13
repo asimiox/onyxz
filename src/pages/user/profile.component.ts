@@ -1,4 +1,3 @@
-
 import { Component, inject, computed, signal, OnInit } from '@angular/core';
 import { DatePipe, CommonModule } from '@angular/common';
 import { RouterLink, Router } from '@angular/router';
@@ -527,4 +526,4 @@ export class ProfileComponent implements OnInit {
        this.toastService.show('Failed to download invoice. Please try again.', 'error');
      }
   }
-}
+  }
