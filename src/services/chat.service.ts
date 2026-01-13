@@ -42,9 +42,7 @@ export class ChatService {
       6. Use markdown for formatting (bolding product names, etc).
       `;
 
-      // Create a new chat session if it doesn't exist. 
-      // Note: Updating products mid-session isn't directly supported without starting a new chat context or injecting it as a user message, 
-      // but for this scope, initialization is sufficient.
+      // Create a new chat session if it doesn't exist.
       if (!this.chatSession) {
          this.chatSession = this.ai.chats.create({
             model: 'gemini-2.5-flash',
@@ -66,8 +64,8 @@ export class ChatService {
 
       if (!this.chatSession) throw new Error("Chat session failed to initialize");
 
-      // FIXED: Use the correct return type from sendMessageStream
-      const result = this.chatSession.sendMessageStream({ message });
+      // FIX: Add await here - sendMessageStream returns a Promise
+      const result = await this.chatSession.sendMessageStream({ message });
       
       return (async function*() {
          for await (const chunk of result) {
