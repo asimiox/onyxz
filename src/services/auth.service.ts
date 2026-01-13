@@ -1,8 +1,8 @@
-
 import { Injectable, signal, computed, inject } from '@angular/core';
 import { User, AuthSession, MembershipTier } from '../models/user';
 import { Router } from '@angular/router';
 import { UserService } from './user.service';
+import { Observable, of } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -74,6 +74,37 @@ export class AuthService {
        this.setSession(updatedSession);
        this.userService.updateUser(updatedUser);
     }
+  }
+
+  // ADDED: Missing changePassword method
+  changePassword(username: string, oldPassword: string, newPassword: string): { success: boolean; message: string } {
+    // Check if user exists and old password matches
+    const users = this.userService.getUsers()();
+    const user = users.find(u => u.username === username);
+    
+    if (!user) {
+      return { success: false, message: 'User not found' };
+    }
+    
+    if (user.password !== oldPassword) {
+      return { success: false, message: 'Current password is incorrect' };
+    }
+    
+    // Update password in user service
+    const updatedUser = { ...user, password: newPassword };
+    this.userService.updateUser(updatedUser);
+    
+    // If current user is changing their own password, update session
+    const currentSession = this._session();
+    if (currentSession && currentSession.user.username === username) {
+      const updatedSession = {
+        ...currentSession,
+        user: updatedUser
+      };
+      this.setSession(updatedSession);
+    }
+    
+    return { success: true, message: 'Password updated successfully' };
   }
 
   login(identifier: string, password: string): { success: boolean; message: string } {
@@ -195,4 +226,4 @@ export class AuthService {
     this._session.set(session);
     localStorage.setItem('mixtas_session', JSON.stringify(session));
   }
-}
+  }
